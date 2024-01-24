@@ -1,11 +1,9 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
-import { FormGroup, FormControl, Validators, FormBuilder, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ApiService } from '../Server/api.service';
-
-import { HttpClient } from '@angular/common/http';
 import { GeoJsonObject } from 'geojson';
-// import { Map, latLng, tileLayer, marker, polyline } from 'leaflet';
 import * as L from 'leaflet';
+
 
 @Component({
   selector: 'app-home',
@@ -99,6 +97,9 @@ export class HomeComponent implements OnInit {
             // this.toastr.error('everything is broken', 'Major Error In Server', { timeOut: 2000, });
           }
         })
+    }
+    else{
+      alert("Fill the Form Completely");
     }
   }
 
