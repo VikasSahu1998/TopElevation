@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
-import {  ApiService } from '../Server/api.service';
+import { ApiService } from '../Server/api.service';
 
 import { HttpClient } from '@angular/common/http';
 import { GeoJsonObject } from 'geojson';
@@ -14,8 +14,8 @@ import * as L from 'leaflet';
 })
 export class HomeComponent implements OnInit {
   constructor(private formbuilder: FormBuilder, private api: ApiService) { }
-  latitude!: any;
-  longitude!: any;
+  lat!: any;
+  long!: any;
 
   TopElevationForm!: FormGroup | any;
   checkbox = "form accepted";
@@ -70,26 +70,26 @@ export class HomeComponent implements OnInit {
   getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
+        this.lat = position.coords.latitude;
+        this.long = position.coords.longitude;
         // this.mylatlng.lat = position.coords.latitude;
         // this.mylatlng.lng = position.coords.longitude;
-        this.showMap(latitude, longitude);
+        this.showMap(this.lat, this.long);
       });
     } else {
       console.log('Geolocation is not supported by this browser.');
     }
   }
-  
+
   onsubmit() {
     console.log(this.TopElevationForm.value)
     if (this.TopElevationForm.valid) {
-      
+
       this.api.postData(this.TopElevationForm.value)
         .subscribe({
           next: (res) => {
             alert("details added successfully");
-          
+
             // this.toastr.success('details added successfully', 'successfully', { timeOut: 2000, });
             this.TopElevationForm.reset();
             // this.dialogref.close('save');
@@ -103,26 +103,26 @@ export class HomeComponent implements OnInit {
   }
 
 
-  showMap(latitude: number, longitude: number) {
-    const map = L.map('map').setView([latitude, longitude], 12);
+  showMap(lat: number, long: number) {
+    const map = L.map('map').setView([lat, long], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a>'
     }).addTo(map);
 
-    const marker1 = L.marker([latitude, longitude]).addTo(map);
+    const marker1 = L.marker([lat, long]).addTo(map);
     const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
 
-    const line = L.polyline([[latitude, longitude], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+    const line = L.polyline([[lat, long], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
 
-    const distance = this.calculateDistance(latitude, longitude, 19.794444, 85.751111);
+    const distance = this.calculateDistance(lat, long, 19.794444, 85.751111);
     console.log('Distance:', distance, 'kilometers');
 
 
-    map.on('mousemove', (e) => {
-      const { lat, lng } = e.latlng;
-      this.latitude = lat;
-      this.longitude = lng;
-    });
+    // map.on('mousemove', (e) => {
+    //   const { lat, lng } = e.latlng;
+    //   this.latitude = lat;
+    //   this.longitude = lng;
+    // });
 
 
     const geojsonData: GeoJsonObject = {

@@ -88,7 +88,7 @@
 
                             <div class="row">
                                 <div class="col-md-6 form-group">
-                                    <input type="text" class="form-control" ngModel="{{latitude}}" name="Latitude"
+                                    <input type="text" class="form-control" ngModel="{{lat}}" name="Latitude"
                                         formControlName="Latitude" id="Latitude" placeholder="Latitude">
                                     <div *ngIf="TopElevationForm.get('Latitude').invalid && (TopElevationForm.get('Latitude').dirty || TopElevationForm.get('Latitude').touched)"
                                         class="alert alert-danger mt-2">
@@ -101,7 +101,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 form-group">
-                                    <input type="text" class="form-control" ngModel="{{longitude}}" name="Longitude"
+                                    <input type="text" class="form-control" ngModel="{{long}}" name="Longitude"
                                         formControlName="Longitude" id="Longitude" placeholder="Longitude">
                                     <div *ngIf="TopElevationForm.get('Longitude').invalid && (TopElevationForm.get('Longitude').dirty || TopElevationForm.get('Longitude').touched)"
                                         class="alert alert-danger mt-2">
@@ -147,7 +147,7 @@
                         <div id="map">
 
                         </div>
-                        <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small>
+                        <!-- <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small> -->
 
 
 
