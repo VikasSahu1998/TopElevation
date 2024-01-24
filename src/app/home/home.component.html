@@ -1,0 +1,163 @@
+<div class="content">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 mb-5 mb-lg-0">
+                        <h2 class="mb-5">Fill this form <br> It's easy.</h2>
+                        <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" (ngSubmit)="onsubmit()"
+                            novalidate>
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <input type="text" class="form-control" name="name" id="name" formControlName="name"
+                                        placeholder="Full Name">
+                                    <div *ngIf="TopElevationForm.get('name').invalid && (TopElevationForm.get('name').dirty || TopElevationForm.get('name').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('name').errors.required">
+                                            Name is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('name').errors.nullValidator">
+                                            Name is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('name').errors.minlength">
+                                            Name must be at least 3 characters long.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <input type="text" class="form-control" name="email" id="email"
+                                        formControlName="email" placeholder="Email">
+                                    <div *ngIf="TopElevationForm.get('email').invalid && (TopElevationForm.get('email').dirty || TopElevationForm.get('email').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('email').errors.required">
+                                            Email is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('email').errors.nullValidator">
+                                            Email is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('email').errors.email">
+                                            Please enter a valid <strong>Email address</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 form-group">
+                                    <input type="number" class="form-control" name="number" id="number"
+                                        formControlName="PhoneNumber" placeholder="Phone Number">
+                                    <div *ngIf="TopElevationForm.get('PhoneNumber').invalid && (TopElevationForm.get('PhoneNumber').dirty || TopElevationForm.get('PhoneNumber').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('PhoneNumber').errors.required">
+                                            Phone Number is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('PhoneNumber').errors.nullValidator">
+                                            Phone Number is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('PhoneNumber').errors.pattern">
+                                            Phone Number must be at least <strong>10 characters long</strong>
+                                        </div>
+
+                                        <!-- <div *ngIf="TopElevationForm.get('PhoneNumber').errors.max">
+                                            Phone Number must be at least <strong>10 characters long</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('PhoneNumber').errors.min">
+                                            Phone Number must be at least<strong>10 characters long</strong>
+                                        </div> -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <textarea class="form-control" name="Address" id="Address" cols="30" rows="7"
+                                        formControlName="Address" placeholder="Address"></textarea>
+                                    <div *ngIf="TopElevationForm.get('Address').invalid && (TopElevationForm.get('Address').dirty || TopElevationForm.get('Address').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('Address').errors.required">
+                                            Address is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Address').errors.nullValidator">
+                                            Address is <strong>required.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 form-group">
+                                    <input type="text" class="form-control" ngModel="{{latitude}}" name="Latitude"
+                                        formControlName="Latitude" id="Latitude" placeholder="Latitude">
+                                    <div *ngIf="TopElevationForm.get('Latitude').invalid && (TopElevationForm.get('Latitude').dirty || TopElevationForm.get('Latitude').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('Latitude').errors.required">
+                                            Latitude is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Latitude').errors.nullValidator">
+                                            Latitude is <strong>required.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 form-group">
+                                    <input type="text" class="form-control" ngModel="{{longitude}}" name="Longitude"
+                                        formControlName="Longitude" id="Longitude" placeholder="Longitude">
+                                    <div *ngIf="TopElevationForm.get('Longitude').invalid && (TopElevationForm.get('Longitude').dirty || TopElevationForm.get('Longitude').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('Longitude').errors.required">
+                                            Longitude is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Longitude').errors.nullValidator">
+                                            Longitude is <strong>required.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12 form-group">
+                                    <input type="checkbox" name="checkbox" id="checkbox" value="{{checkbox}}"
+                                        formControlName="checkbox">
+                                    <span>I've read and agree with T&C</span>
+                                    <div *ngIf="TopElevationForm.get('checkbox').invalid && (TopElevationForm.get('checkbox').dirty || TopElevationForm.get('checkbox').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('checkbox').errors.required">
+                                            checkbox is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('checkbox').errors.nullValidator">
+                                            checkbox is <strong>required.</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-12 ">
+                                    <button type="submit" value="Submit"
+                                        class="btn btn-primary rounded-0 py-2 px-4">Submit</button>
+                                    <span class="submitting"></span>
+                                </div>
+                            </div>
+                            <p><small>Powered by <a href="https://www.cognitivenavigation.com/"
+                                        target="_blank">Cognitive
+                                        Navigation Pvt. Ltd</a></small></p>
+                        </form>
+
+                    </div>
+                    <div class="col-lg-4 ml-auto">
+                        <div id="map">
+
+                        </div>
+                        <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small>
+
+
+
+                        <!-- <h3 class="mb-4">Let's talk about everything.</h3>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil deleniti itaque similique
+                            magni. Magni, laboriosam perferendis maxime!</p>
+                        <p><a href="#">Read more</a></p> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
