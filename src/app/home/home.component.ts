@@ -3,8 +3,8 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { ApiService } from '../Server/api.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
- 
- 
+
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -16,7 +16,7 @@ export class HomeComponent implements OnInit {
   constructor(private formbuilder: FormBuilder, private api: ApiService) { }
   lat!: any;
   long!: any;
- 
+  updatedDistance!: number;
   TopElevationForm!: FormGroup | any;
   checkbox = "form accepted";
   ngOnInit(): void {
@@ -43,13 +43,13 @@ export class HomeComponent implements OnInit {
     this.TopElevationForm.get('uniqueId').setValue(uniqueId);
     return uniqueId;
   }
- 
+
   getCurrentDateTime(): string {
     const dateTime = new Date().toLocaleString();
     this.TopElevationForm.get('dateTime').setValue(dateTime);
     return dateTime;
   }
- 
+
   // mylatlng: any = {
   //   lat: undefined,
   //   lng: undefined
@@ -66,7 +66,7 @@ export class HomeComponent implements OnInit {
   //     alert("Geolocation is not supported by this browser.");
   //   }
   // }
- 
+
   getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -80,16 +80,16 @@ export class HomeComponent implements OnInit {
       console.log('Geolocation is not supported by this browser.');
     }
   }
- 
+
   onsubmit() {
     console.log(this.TopElevationForm.value)
     if (this.TopElevationForm.valid) {
- 
+
       this.api.postData(this.TopElevationForm.value)
         .subscribe({
           next: (res) => {
             alert("details added successfully");
- 
+
             // this.toastr.success('details added successfully', 'successfully', { timeOut: 2000, });
             this.TopElevationForm.reset();
             // this.dialogref.close('save');
@@ -104,52 +104,51 @@ export class HomeComponent implements OnInit {
       alert("Fill the Form Completely");
     }
   }
- 
- 
+
+
   showMap(lat: number, long: number) {
     const map = L.map('map').setView([lat, long], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a>'
     }).addTo(map);
- 
+
     const marker1 = L.marker([lat, long]).addTo(map);
     const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
- 
+
     // Initialize the line with the initial coordinates
     const line = L.polyline([[lat, long], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
- 
+
     const distance = this.calculateDistance(lat, long, 19.794444, 85.751111);
- 
- 
+
+
     map.on('click', (e) => {
       const { lat, lng } = e.latlng;
       this.latitude = lat;
       this.longitude = lng;
       marker1.setLatLng([lat, lng]);
-   
+
       // Update the line coordinates
       line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
- 
+
       // Set the values of Latitude and Longitude form controls
       this.TopElevationForm.get('Latitude').setValue(lat);
       this.TopElevationForm.get('Longitude').setValue(lng);
- 
+
+      // Calculate and display updated distance
+      this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+      console.log('Distance:', this.updatedDistance, 'kilometers');
+
       // Display the clicked location details
       console.log('Clicked Location:', lat, lng);
       const popup = L.popup();
-      popup.setContent(`Latitude: ${lat}, Longitude: ${long} Distance: ${distance} kilometers`);
+      popup.setContent(`Latitude: ${lat}, Longitude: ${long} Distance: ${this.updatedDistance} km `);
+
       popup.setLatLng(e.latlng).openOn(map);
 
-      // Calculate and display updated distance
-      const updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-      console.log('Distance:', updatedDistance, 'kilometers');
-
-      
- 
     });
- 
- 
- 
+
+
+
     const geojsonData: GeoJsonObject = {
       "features": [
         { "type": "Feature", "properties": { "id": 31, "TopElevation": "74.7 Mtr" }, "geometry": { "type": "Polygon", "coordinates": [[[85.5584595, 19.8662817], [85.5579825, 19.8496167], [85.5755949, 19.8491647], [85.5760738, 19.8658293], [85.5584595, 19.8662817]]] } },
@@ -158,9 +157,9 @@ export class HomeComponent implements OnInit {
       ],
       "type": "FeatureCollection"
     } as GeoJsonObject;
- 
- 
- 
+
+
+
     const geojsonLayer = new L.GeoJSON(geojsonData, {
       style: function (feature) {
         return { color: 'blue' };
@@ -170,10 +169,10 @@ export class HomeComponent implements OnInit {
       }
     });
     geojsonLayer.addTo(map);
- 
+
   }
- 
- 
+
+
   calculateDistance(latitude1: number, longitude1: number, latitude2: number, longitude2: number): number {
     const earthRadius = 6371; // Radius of the Earth in kilometers
     const latitudeDiff = this.degToRad(latitude2 - latitude1);
@@ -184,10 +183,10 @@ export class HomeComponent implements OnInit {
       Math.sin(longitudeDiff / 2) * Math.sin(longitudeDiff / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const distance = earthRadius * c;
- 
+
     return distance;
   }
- 
+
   degToRad(degrees: number): number {
     return degrees * (Math.PI / 180);
   }
