@@ -126,7 +126,7 @@ export class HomeComponent implements OnInit {
       this.latitude = lat;
       this.longitude = lng;
       marker1.setLatLng([lat, lng]);
- 
+   
       // Update the line coordinates
       line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
  
@@ -136,9 +136,15 @@ export class HomeComponent implements OnInit {
  
       // Display the clicked location details
       console.log('Clicked Location:', lat, lng);
+      const popup = L.popup();
+      popup.setContent(`Latitude: ${lat}, Longitude: ${long} Distance: ${distance} kilometers`);
+      popup.setLatLng(e.latlng).openOn(map);
+
       // Calculate and display updated distance
       const updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
       console.log('Distance:', updatedDistance, 'kilometers');
+
+      
  
     });
  
