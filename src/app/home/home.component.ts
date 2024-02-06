@@ -97,7 +97,8 @@ export class HomeComponent implements OnInit {
     // Generate a random 4-digit OTP
     this.generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
     // You can implement OTP sending logic here, like sending an SMS to the entered phone number
-    console.log("Generated OTP: ", this.generatedOTP);
+    alert(`Generated OTP: ${this.generatedOTP}`);
+    // console.log("Generated OTP: ", this.generatedOTP);
   }
 
   onPhoneNumberChange() {
@@ -230,13 +231,43 @@ export class HomeComponent implements OnInit {
     } as GeoJsonObject;
 
 
-
-
-
     const geojsonLayer = new L.GeoJSON(geojsonData, {
       style: function (feature) {
-        return { color: 'blue' };
-      },
+        if (!feature || !feature.properties || !feature.properties.Height) return {};
+            const height = feature.properties.Height;
+            let color = '';
+ 
+            switch (height) {
+              case 'RW_05_23':
+                color = 'yellow';
+                break;
+              case '49.7M AMSL':
+                color = 'red';
+                break;
+              case '64.7M AMSL':
+                color = 'green';
+                break;
+              case '74.7M AMSL':
+                color = 'blue';
+                break;
+              case '59.7M AMSL':
+                color = 'pink';
+                break;
+              case '24.7M AMSL':
+                color = 'orange';
+                break;
+              case 'NOC_Req':
+                color = 'brown';
+                break;
+              case 'Polygon 775':
+                color = 'black';
+                break;
+            }
+ 
+            return {
+              color: color,
+            };
+          },
       onEachFeature: function (feature, layer) {
         layer.bindPopup(feature.properties.Height);
       }
