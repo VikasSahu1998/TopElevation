@@ -5,8 +5,8 @@
                 <div class="row align-items-center">
                     <div class="col-lg-5 mb-5 mb-lg-0">
                         <h2 class="mb-5">Fill this form <br> It's easy.</h2>
-                        <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on" (ngSubmit)="onsubmit()"
-                            novalidate>
+                        <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on"
+                            (ngSubmit)="onsubmit()" novalidate>
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <input type="text" class="form-control" name="name" id="name" formControlName="name"
@@ -44,16 +44,17 @@
 
 
                             <div class="row">
-                        
+
                                 <div class="col-md-6 form-group">
                                     <input type="number" class="form-control" name="number" id="number"
-                                        formControlName="PhoneNumber" placeholder="Phone Number" (change)="onPhoneNumberChange()">
+                                        formControlName="PhoneNumber" placeholder="Phone Number"
+                                        (change)="onPhoneNumberChange()">
                                     <div *ngIf="TopElevationForm.get('PhoneNumber').invalid && (TopElevationForm.get('PhoneNumber').dirty || TopElevationForm.get('PhoneNumber').touched)"
                                         class="alert alert-danger mt-2">
                                         <div *ngIf="TopElevationForm.get('PhoneNumber').errors.required">
                                             Phone Number is <strong>required.</strong>
                                         </div>
-                                       
+
                                         <div *ngIf="TopElevationForm.get('PhoneNumber').errors.nullValidator">
                                             Phone Number is <strong>required.</strong>
                                         </div>
@@ -71,16 +72,17 @@
                                 </div>
 
 
-                                <div class="col-md-6 form-group">
-                                    <input type="number" class="form-control" name="OTP" id="OTP"
-                                        formControlName="otp" placeholder="OTP">
+                                <div class="col-md-4 form-group">
+                                    <input type="number" class="form-control" name="OTP" id="OTP" formControlName="otp"
+                                        placeholder="OTP">
+
                                     <div *ngIf="TopElevationForm.get('otp').invalid && (TopElevationForm.get('otp').dirty || TopElevationForm.get('otp').touched)"
                                         class="alert alert-danger mt-2">
 
                                         <div *ngIf="TopElevationForm.get('otp').errors.required">
                                             OTP Number is <strong>required.</strong>
                                         </div>
-                                       
+
                                         <div *ngIf="TopElevationForm.get('otp').errors.nullValidator">
                                             OTP Number is <strong>required.</strong>
                                         </div>
@@ -89,6 +91,14 @@
                                             OTP must be at least <strong>4 characters long</strong>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-2  form-group mt-2 ">
+
+                                    <button type="button" class="btn" (click)="regenerateOtp()">
+                                        <i class="bi bi-bootstrap-reboot"></i>
+                                    </button>
+
+
                                 </div>
                             </div>
 
@@ -154,8 +164,8 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-md-12 ">
-                                    <button type="submit" value="Submit"
-                                        class="btn btn-primary rounded-0 py-2 px-4" [disabled]="TopElevationForm.invalid">Submit</button>
+                                    <button type="submit" value="Submit" class="btn btn-primary rounded-0 py-2 px-4"
+                                        [disabled]="TopElevationForm.invalid">Submit</button>
                                     <span class="submitting"></span>
                                 </div>
                             </div>
@@ -165,8 +175,8 @@
                         </form>
 
                     </div>
-                    <div class="col-lg-7 ml-auto"  #map>
-                        <div id="map" >
+                    <div class="col-lg-7 ml-auto" #map>
+                        <div id="map">
 
                         </div>
                         <!-- <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small> -->

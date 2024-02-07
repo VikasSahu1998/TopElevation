@@ -101,6 +101,9 @@ export class HomeComponent implements OnInit {
     // console.log("Generated OTP: ", this.generatedOTP);
   }
 
+  regenerateOtp() {
+    this.generateOTP();
+  }
   onPhoneNumberChange() {
     const phoneNumberControl = this.TopElevationForm.get('PhoneNumber');
     if (phoneNumberControl && phoneNumberControl.valid) {
@@ -167,6 +170,7 @@ export class HomeComponent implements OnInit {
     L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a>'
     }).addTo(map);
+    L.control.scale().addTo(map);
 
     const marker1 = L.marker([lat, long]).addTo(map);
     const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
@@ -234,40 +238,40 @@ export class HomeComponent implements OnInit {
     const geojsonLayer = new L.GeoJSON(geojsonData, {
       style: function (feature) {
         if (!feature || !feature.properties || !feature.properties.Height) return {};
-            const height = feature.properties.Height;
-            let color = '';
- 
-            switch (height) {
-              case 'RW_05_23':
-                color = 'yellow';
-                break;
-              case '49.7M AMSL':
-                color = 'red';
-                break;
-              case '64.7M AMSL':
-                color = 'green';
-                break;
-              case '74.7M AMSL':
-                color = 'blue';
-                break;
-              case '59.7M AMSL':
-                color = 'pink';
-                break;
-              case '24.7M AMSL':
-                color = 'orange';
-                break;
-              case 'NOC_Req':
-                color = 'brown';
-                break;
-              case 'Polygon 775':
-                color = 'black';
-                break;
-            }
- 
-            return {
-              color: color,
-            };
-          },
+        const height = feature.properties.Height;
+        let color = '';
+
+        switch (height) {
+          case 'RW_05_23':
+            color = 'yellow';
+            break;
+          case '49.7M AMSL':
+            color = 'red';
+            break;
+          case '64.7M AMSL':
+            color = 'green';
+            break;
+          case '74.7M AMSL':
+            color = 'blue';
+            break;
+          case '59.7M AMSL':
+            color = 'pink';
+            break;
+          case '24.7M AMSL':
+            color = 'orange';
+            break;
+          case 'NOC_Req':
+            color = 'brown';
+            break;
+          case 'Polygon 775':
+            color = 'black';
+            break;
+        }
+
+        return {
+          color: color,
+        };
+      },
       onEachFeature: function (feature, layer) {
         layer.bindPopup(feature.properties.Height);
       }
