@@ -60,24 +60,6 @@ export class HomeComponent implements OnInit {
     return dateTime;
   }
 
-
-  // mylatlng: any = {
-  //   lat: undefined,
-  //   lng: undefined
-  // };
-  // findMe() {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition((position) => {
-  //       console.log('latitude', position.coords.latitude);
-  //       console.log('longitude', position.coords.longitude);
-  //       this.mylatlng.lat = position.coords.latitude;
-  //       this.mylatlng.lng = position.coords.longitude;
-  //     });
-  //   } else {
-  //     alert("Geolocation is not supported by this browser.");
-  //   }
-  // }
-
   getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -102,7 +84,13 @@ export class HomeComponent implements OnInit {
   }
 
   regenerateOtp() {
-    this.generateOTP();
+   const phoneNumberControl = this.TopElevationForm.get('PhoneNumber');
+    if (phoneNumberControl && phoneNumberControl.valid) {
+      this.generateOTP();
+      this.otpSent = true;
+    } else {
+      this.otpSent = false;
+    }
   }
   onPhoneNumberChange() {
     const phoneNumberControl = this.TopElevationForm.get('PhoneNumber');
