@@ -6,7 +6,7 @@
                     <div class="col-lg-5 mb-5 mb-lg-0">
                         <h2 class="mb-5">Fill this form <br> It's easy.</h2>
                         <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on"
-                            (ngSubmit)="onsubmit()" novalidate>
+                            (ngSubmit)="verifyOtp()" novalidate>
                             <div class="row">
                                 <div class="col-md-6 form-group">
                                     <input type="text" class="form-control" name="name" id="name" formControlName="name"
