@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { ApiService } from '../Server/api.service';
 import * as L from 'leaflet';
 import html2canvas from 'html2canvas';
+import { GeoJsonObject } from 'geojson';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,7 @@ export class HomeComponent implements OnInit {
   latitude: any;
   constructor(private formbuilder: FormBuilder, private api: ApiService) { }
   lat!: any;
-  long!: any;
+  lng!: any;
   updatedDistance!: number;
   TopElevationForm!: FormGroup | any;
   checkbox = "form accepted";
@@ -43,6 +44,7 @@ export class HomeComponent implements OnInit {
     this.generateUniqueId();
     this.getCurrentDateTime();
     this.getLocation();
+
   }
 
   generateUniqueId(): string {
@@ -63,10 +65,10 @@ export class HomeComponent implements OnInit {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         this.lat = position.coords.latitude;
-        this.long = position.coords.longitude;
+        this.lng = position.coords.longitude;
         // this.mylatlng.lat = position.coords.latitude;
         // this.mylatlng.lng = position.coords.longitude;
-        this.showMap(this.lat, this.long);
+        this.showMap(this.lat, this.lng);
       });
     } else {
       console.log('Geolocation is not supported by this browser.');
@@ -163,35 +165,6 @@ export class HomeComponent implements OnInit {
     }).addTo(map);
     L.control.scale().addTo(map);
 
-    const marker1 = L.marker([lat, lng]).addTo(map);
-    const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
-
-    // Initialize the line with the initial coordinates
-    const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
-
-    map.on('click', (e) => {
-      const { lat, lng } = e.latlng;
-      this.latitude = lat;
-      this.longitude = lng;
-      marker1.setLatLng([lat, lng]);
-
-      // Update the line coordinates
-      line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
-
-      // Set the values of Latitude and Longitude form controls
-      this.TopElevationForm.get('Latitude').setValue(lat);
-      this.TopElevationForm.get('Longitude').setValue(lng);
-
-      // Calculate and display updated distance
-      this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-
-      // Display the clicked location details
-      const popup = L.popup();
-      popup.setContent(`Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},\n Distance: ${this.updatedDistance.toFixed(2)}km `);
-      popup.setLatLng(e.latlng).openOn(map);
-      popup.openOn(map);
-    });
-
     // Load the custom layer JSON
     fetch('assets/Height.geojsonl.json')
       .then(response => response.json())
@@ -201,7 +174,6 @@ export class HomeComponent implements OnInit {
             if (!feature || !feature.properties || !feature.properties.Name) return {};
             const height = feature.properties.Name;
             let color = '';
-
             switch (height) {
               case 'RW_05_23':
                 color = 'yellow';
@@ -228,22 +200,68 @@ export class HomeComponent implements OnInit {
                 color = 'black';
                 break;
             }
+
             return {
               color: color,
             };
           },
-
-          onEachFeature: function (feature, layer) {
-            if (feature.properties && feature.properties.Name) {
-              layer.bindPopup(feature.properties.Name);
+          onEachFeature: (feature, layer) => {
+            if (feature.properties.Name) {
+              layer.on('click', (e) => {
+                // const { lat, lng } = e.latlng;
+                const marker = L.marker([lat, lng]).addTo(map);
+                const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
+                const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+  
+                map.on('click', (e) => {
+                  const { lat, lng } = e.latlng;
+                  this.latitude = lat;
+                  this.longitude = lng;
+                  marker.setLatLng([lat, lng]);
+  
+                  line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
+  
+                  this.TopElevationForm.get('Latitude').setValue(lat);
+                  this.TopElevationForm.get('Longitude').setValue(lng);
+                  this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+              
+                  const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
+                  popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
+                  popup.openOn(map);
+                });
+              }); 
             }
+            else{
+              layer.on('click', (e) => {
+                // const { lat, lng } = e.latlng;
+                const marker = L.marker([lat, lng]).addTo(map);
+                const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
+                const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+  
+                map.on('click', (e) => {
+                  const { lat, lng } = e.latlng;
+                  this.latitude = lat;
+                  this.longitude = lng;
+                  marker.setLatLng([lat, lng]);
+  
+                  line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
+  
+                  this.TopElevationForm.get('Latitude').setValue(lat);
+                  this.TopElevationForm.get('Longitude').setValue(lng);
+                  this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+              
+                  const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
+                  popup.setContent(` Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
+                  popup.openOn(map);
+                });
+              }); 
+            }
+        
           }
         });
         geojsonLayer.addTo(map);
-      }
-      );
+      });
   }
-
 
   calculateDistance(latitude1: number, longitude1: number, latitude2: number, longitude2: number): number {
     const earthRadius = 6371; // Radius of the Earth in kilometers
