@@ -3,7 +3,7 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { ApiService } from '../Server/api.service';
 import * as L from 'leaflet';
 import html2canvas from 'html2canvas';
-import { GeoJsonObject } from 'geojson';
+
 
 @Component({
   selector: 'app-home',
@@ -39,12 +39,9 @@ export class HomeComponent implements OnInit {
       dateTime: new FormControl(['']),
       imageData: new FormControl(['']),
     },);
-
-    // this.findMe()
     this.generateUniqueId();
     this.getCurrentDateTime();
     this.getLocation();
-
   }
 
   generateUniqueId(): string {
@@ -74,7 +71,6 @@ export class HomeComponent implements OnInit {
       console.log('Geolocation is not supported by this browser.');
     }
   }
-
 
   generateOTP() {
     // Generate a random 4-digit OTP
@@ -141,8 +137,6 @@ export class HomeComponent implements OnInit {
     }
   }
 
-
-
   captureScreenshot() {
     const mapContainer = this.mapElement.nativeElement;
 
@@ -200,63 +194,35 @@ export class HomeComponent implements OnInit {
                 color = 'black';
                 break;
             }
-
             return {
               color: color,
             };
           },
           onEachFeature: (feature, layer) => {
-            if (feature.properties.Name) {
-              layer.on('click', (e) => {
-                // const { lat, lng } = e.latlng;
-                const marker = L.marker([lat, lng]).addTo(map);
-                const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
-                const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
-  
-                map.on('click', (e) => {
-                  const { lat, lng } = e.latlng;
-                  this.latitude = lat;
-                  this.longitude = lng;
-                  marker.setLatLng([lat, lng]);
-  
-                  line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
-  
-                  this.TopElevationForm.get('Latitude').setValue(lat);
-                  this.TopElevationForm.get('Longitude').setValue(lng);
-                  this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-              
-                  const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
-                  popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
-                  popup.openOn(map);
-                });
-              }); 
-            }
-            else{
-              layer.on('click', (e) => {
-                // const { lat, lng } = e.latlng;
-                const marker = L.marker([lat, lng]).addTo(map);
-                const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
-                const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
-  
-                map.on('click', (e) => {
-                  const { lat, lng } = e.latlng;
-                  this.latitude = lat;
-                  this.longitude = lng;
-                  marker.setLatLng([lat, lng]);
-  
-                  line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
-  
-                  this.TopElevationForm.get('Latitude').setValue(lat);
-                  this.TopElevationForm.get('Longitude').setValue(lng);
-                  this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-              
-                  const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
-                  popup.setContent(` Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
-                  popup.openOn(map);
-                });
-              }); 
-            }
-        
+
+            layer.on('click', (e) => {
+              // const { lat, lng } = e.latlng;
+              const marker = L.marker([lat, lng]).addTo(map);
+              const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
+              const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+
+              map.on('click', (e) => {
+                const { lat, lng } = e.latlng;
+                this.latitude = lat;
+                this.longitude = lng;
+                marker.setLatLng([lat, lng]);
+
+                line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
+
+                this.TopElevationForm.get('Latitude').setValue(lat);
+                this.TopElevationForm.get('Longitude').setValue(lng);
+                this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+
+                const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
+                popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
+                popup.openOn(map);
+              });
+            });
           }
         });
         geojsonLayer.addTo(map);
