@@ -1,5 +1,7 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Note } from '../model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,10 +9,16 @@ import { Injectable } from '@angular/core';
 export class ApiService {
 
 
+  baseURL: string = "https://od3ru829y7.execute-api.us-west-2.amazonaws.com/items";
+
   constructor(private http: HttpClient) { }
 
+
   postData(data: any) {
-    return this.http.post<any>("https://top-elevation-form-default-rtdb.firebaseio.com/TopElevationForm.json/", data);
+    const headers = {
+      'Content-Type': 'application/json'
+    };
+    return this.http.post<any>(this.baseURL, data, { headers, withCredentials: true });
   }
 
 }

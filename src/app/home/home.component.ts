@@ -1,6 +1,7 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ApiService } from '../Server/api.service';
+import { Note } from '../model';
 import * as L from 'leaflet';
 import html2canvas from 'html2canvas';
 
@@ -25,8 +26,22 @@ export class HomeComponent implements OnInit {
 
   @ViewChild('map') mapElement!: ElementRef;
 
+  noteObj: Note = {
+    id: undefined,
+    name: undefined,
+    uniqueId: undefined,
+    email: undefined,
+    Address: undefined,
+    PhoneNumber: undefined,
+    otp: undefined,
+    Latitude: undefined,
+    Longitude: undefined,
+    checkbox: undefined,
+    dateTime: undefined,
+    // imageData: undefined
+  }
   ngOnInit(): void {
-    this.TopElevationForm = new FormGroup({
+    this.TopElevationForm = this.formbuilder.group({
       name: new FormControl('', [Validators.required, Validators.nullValidator, Validators.minLength(3),]),
       email: new FormControl('', [Validators.required, Validators.nullValidator, Validators.email]),
       Address: new FormControl('', [Validators.required, Validators.nullValidator]),
@@ -105,7 +120,7 @@ export class HomeComponent implements OnInit {
       if (enteredOTP == this.generatedOTP) {
         // OTP verification successful
         alert("OTP verification successful");
-        this.onsubmit();
+
       } else {
         // OTP verification failed
         alert("OTP verification failed");
@@ -114,23 +129,31 @@ export class HomeComponent implements OnInit {
   }
 
   onsubmit() {
-    this.captureScreenshot()
-    if (this.TopElevationForm.valid) {
-      this.api.postData(this.TopElevationForm.value,)
-        .subscribe({
-          next: (res) => {
-
-            alert("details added successfully");
-
-            // this.toastr.success('details added successfully', 'successfully', { timeOut: 2000, });
-            this.TopElevationForm.reset();
-            // this.dialogref.close('save');
-          },
-          error: () => {
-            alert("Major Error In Server");
-            // this.toastr.error('everything is broken', 'Major Error In Server', { timeOut: 2000, });
-          }
-        })
+    this.verifyOtp();
+    this.captureScreenshot();
+    const { value } = this.TopElevationForm;
+    this.noteObj.id = value.uniqueId,
+      this.noteObj.name = value.name,
+      this.noteObj.email = value.email,
+      this.noteObj.Address = value.Address,
+      this.noteObj.PhoneNumber = value.PhoneNumber,
+      this.noteObj.otp = value.otp,
+      this.noteObj.Latitude = value.Latitude,
+      this.noteObj.Longitude = value.Longitude,
+      this.noteObj.checkbox = value.checkbox,
+      this.noteObj.dateTime = value.dateTime
+    // this.noteObj.imageData = value.imageData;
+    if (this.TopElevationForm) {
+      this.api.postData(this.noteObj).subscribe(
+        response => {
+          console.log('PUT request successful', response);
+          // Handle response data here
+        },
+        error => {
+          console.error('PUT request failed', error);
+          // Handle errors here
+        }
+      );
     }
     else {
       alert("Fill the Form Completely");
@@ -147,7 +170,6 @@ export class HomeComponent implements OnInit {
       this.TopElevationForm.patchValue({
         imageData: imageData,
       });
-      console.log(imageData);
     });
   }
 
