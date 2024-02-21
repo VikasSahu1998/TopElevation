@@ -143,17 +143,17 @@ export class HomeComponent implements OnInit {
       this.noteObj.checkbox = value.checkbox,
       this.noteObj.dateTime = value.dateTime
     // this.noteObj.imageData = value.imageData;
-    if (this.TopElevationForm) {
-      this.api.postData(this.noteObj).subscribe(
-        response => {
-          console.log('PUT request successful', response);
-          // Handle response data here
-        },
-        error => {
-          console.error('PUT request failed', error);
-          // Handle errors here
-        }
-      );
+    if (this.TopElevationForm.valid) {
+      this.api.postData(this.noteObj)
+        .subscribe({
+          next: (res) => {
+            console.log('PUT request successful', res);
+            this.TopElevationForm.reset();
+          },
+          error: () => {
+             console.error('PUT request failed', );
+          }
+        })
     }
     else {
       alert("Fill the Form Completely");
@@ -240,7 +240,7 @@ export class HomeComponent implements OnInit {
                 this.TopElevationForm.get('Longitude').setValue(lng);
                 this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
 
-                const popup = L.popup({ autoPan: false }).setLatLng(e.latlng);
+                const popup = L.popup({ autoPan: false,offset: L.point(0, -30)}).setLatLng(e.latlng);
                 popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
                 popup.openOn(map);
               });
