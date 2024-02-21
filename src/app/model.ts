@@ -10,5 +10,5 @@ export interface Note {
     Longitude: any,
     checkbox: any,
     dateTime:any,
-    // imageData: any,
+    imageData: any,
 }

@@ -24,7 +24,7 @@ export class HomeComponent implements OnInit {
   generatedOTP!: any;
   otpSent: boolean = false;
 
-  @ViewChild('map') mapElement!: ElementRef;
+  @ViewChild('mapElement') mapElement!: ElementRef;
 
   noteObj: Note = {
     id: undefined,
@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
     Longitude: undefined,
     checkbox: undefined,
     dateTime: undefined,
-    // imageData: undefined
+    imageData: undefined
   }
   ngOnInit(): void {
     this.TopElevationForm = this.formbuilder.group({
@@ -142,7 +142,7 @@ export class HomeComponent implements OnInit {
       this.noteObj.Longitude = value.Longitude,
       this.noteObj.checkbox = value.checkbox,
       this.noteObj.dateTime = value.dateTime
-    // this.noteObj.imageData = value.imageData;
+    this.noteObj.imageData = value.imageData;
     if (this.TopElevationForm.valid) {
       this.api.postData(this.noteObj)
         .subscribe({
@@ -151,7 +151,7 @@ export class HomeComponent implements OnInit {
             this.TopElevationForm.reset();
           },
           error: () => {
-             console.error('PUT request failed', );
+            console.error('PUT request failed',);
           }
         })
     }
@@ -160,18 +160,28 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  captureScreenshot() {
-    const mapContainer = this.mapElement.nativeElement;
+  ngAfterViewInit() {
 
-    html2canvas(mapContainer).then(canvas => {
-      // `canvas` now contains the screenshot of the OpenStreetMap.
-      // You can use it, save it, or send it to the server as needed.
-      const imageData = canvas.toDataURL('image/png');
-      this.TopElevationForm.patchValue({
-        imageData: imageData,
-      });
-    });
+    this.captureScreenshot();
   }
+  captureScreenshot() {
+    if (this.mapElement) {
+      const mapContainer = this.mapElement.nativeElement;
+  
+      html2canvas(mapContainer).then(canvas => {
+        // `canvas` now contains the screenshot of the OpenStreetMap.
+        const imageData = canvas.toDataURL('image/png');
+  
+        // Update the form control 'imageData'
+        this.TopElevationForm.get('imageData').setValue(imageData);
+      }).catch(error => {
+        console.error('Error capturing screenshot:', error);
+      });
+    } else {
+      console.error('mapElement is undefined');
+    }
+  }
+  
 
   showMap(lat: number, lng: number) {
     const map = L.map('map').setView([19.794444, 85.751111], 10);
@@ -240,7 +250,7 @@ export class HomeComponent implements OnInit {
                 this.TopElevationForm.get('Longitude').setValue(lng);
                 this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
 
-                const popup = L.popup({ autoPan: false,offset: L.point(0, -30)}).setLatLng(e.latlng);
+                const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
                 popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
                 popup.openOn(map);
               });
