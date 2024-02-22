@@ -147,11 +147,13 @@ export class HomeComponent implements OnInit {
       this.api.postData(this.noteObj)
         .subscribe({
           next: (res) => {
-            console.log('PUT request successful', res);
+            // console.log('PUT request successful', res);
+            alert('data send successful',);
             this.TopElevationForm.reset();
           },
           error: () => {
-            console.error('PUT request failed',);
+            // console.error('PUT request failed',);
+            alert('PUT request failed',);
           }
         })
     }
@@ -186,8 +188,7 @@ export class HomeComponent implements OnInit {
   showMap(lat: number, lng: number) {
     const map = L.map('map').setView([19.794444, 85.751111], 10);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a> '
-
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
     }).addTo(map);
     L.control.scale().addTo(map);
 

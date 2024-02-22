@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="row align-items-center">
                     <div class="col-lg-5 mb-5 mb-lg-0">
-                        <h2 class="mb-5">Fill this form <br> It's easy.</h2>
+                        <h2 class="mb-5">Top Elevation<br><small>Data From.</small></h2>
                         <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on"
                             (ngSubmit)="onsubmit()" novalidate>
                             <div class="row">
@@ -72,7 +72,7 @@
                                 </div>
 
 
-                                <div class="col-md-4 form-group">
+                                <div class="col-md-4 form-group ">
                                     <input type="number" class="form-control" name="OTP" id="OTP" formControlName="otp"
                                         placeholder="OTP">
 
@@ -94,8 +94,8 @@
                                 </div>
                                 <div class="col-md-2  form-group mt-2 ">
 
-                                    <button type="button" class="btn" (click)="regenerateOtp()">
-                                        <i class="bi bi-bootstrap-reboot"></i>
+                                    <button type="button" class="btn btn-link btn-lg" (click)="regenerateOtp()">
+                                        <i class="bi bi-arrow-repeat"></i>
                                     </button>
 
 
@@ -163,20 +163,26 @@
                                 </div>
                             </div>
                             <div class="row mt-2">
-                                <div class="col-md-12 ">
-                                    <button type="submit" value="Submit" class="btn btn-primary rounded-0 py-2 px-4"
-                                        [disabled]="TopElevationForm.invalid">Submit</button>
+                                <div class="col-6" align="start">
+                                    <button type="submit" value="Submit"
+                                        class=" btn  btn-outline-primary rounded-5 py-2 px-4">Submit</button>
                                     <span class="submitting"></span>
+                                </div>
+                                <div class="col-6" align="end">
+                                    <button type="reset" value="reset"
+                                        class="btn btn-outline-danger rounded-5 py-2 px-4"
+                                        (click)="TopElevationForm.reset()">Clear</button>
+
                                 </div>
                             </div>
                             <p><small>Powered by <a href="https://www.cognitivenavigation.com/"
-                                        target="_blank">Cognitive
-                                        Navigation Pvt. Ltd</a></small></p>
+                                        target="_blank"><b>Cognitive
+                                            Navigation Pvt. Ltd</b> </a></small></p>
                         </form>
 
                     </div>
-                    <div class="col-lg-7 ml-auto" >
-                        <div id="map"  #mapElement >
+                    <div class="col-lg-7 ml-auto">
+                        <div id="map" #mapElement>
 
                         </div>
                         <!-- <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small> -->
