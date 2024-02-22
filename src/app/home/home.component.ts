@@ -4,7 +4,7 @@ import { ApiService } from '../Server/api.service';
 import { Note } from '../model';
 import * as L from 'leaflet';
 import html2canvas from 'html2canvas';
-
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +14,7 @@ import html2canvas from 'html2canvas';
 export class HomeComponent implements OnInit {
   longitude: any;
   latitude: any;
-  constructor(private formbuilder: FormBuilder, private api: ApiService) { }
+  constructor(private formbuilder: FormBuilder, private api: ApiService, private toastr: ToastrService) { }
   lat!: any;
   lng!: any;
   updatedDistance!: number;
@@ -83,7 +83,9 @@ export class HomeComponent implements OnInit {
         this.showMap(this.lat, this.lng);
       });
     } else {
-      console.log('Geolocation is not supported by this browser.');
+      this.toastr.error('Geolocation is not supported by this browser', 'Major Error', {
+        timeOut: 3000,
+      });
     }
   }
 
@@ -91,8 +93,10 @@ export class HomeComponent implements OnInit {
     // Generate a random 4-digit OTP
     this.generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
     // You can implement OTP sending logic here, like sending an SMS to the entered phone number
-    alert(`Generated OTP: ${this.generatedOTP}`);
-    // console.log("Generated OTP: ", this.generatedOTP);
+
+    this.toastr.success(this.generatedOTP, 'Generated OTP', {
+      timeOut: 5000,
+    });
   }
 
   regenerateOtp() {
@@ -119,11 +123,14 @@ export class HomeComponent implements OnInit {
       const enteredOTP = this.TopElevationForm.get('otp').value;
       if (enteredOTP == this.generatedOTP) {
         // OTP verification successful
-        alert("OTP verification successful");
-
+        this.toastr.success('OTP verification successfull', 'successfully', {
+          timeOut: 1000,
+        });
       } else {
         // OTP verification failed
-        alert("OTP verification failed");
+        this.toastr.error('OTP verification failed', 'Major Error', {
+          timeOut: 1000,
+        });
       }
     }
   }
@@ -147,18 +154,23 @@ export class HomeComponent implements OnInit {
       this.api.postData(this.noteObj)
         .subscribe({
           next: (res) => {
-            // console.log('PUT request successful', res);
-            alert('data send successful',);
+            this.toastr.success(res, 'successfully', {
+              timeOut: 1000,
+            });
             this.TopElevationForm.reset();
           },
-          error: () => {
-            // console.error('PUT request failed',);
-            alert('PUT request failed',);
+          error: (e) => {
+            this.toastr.error(e, 'failed', {
+              timeOut: 1000,
+            });
+
           }
         })
     }
     else {
-      alert("Fill the Form Completely");
+      this.toastr.error('Fill the Form Completely', 'failed', {
+        timeOut: 1000,
+      });
     }
   }
 
@@ -169,21 +181,23 @@ export class HomeComponent implements OnInit {
   captureScreenshot() {
     if (this.mapElement) {
       const mapContainer = this.mapElement.nativeElement;
-  
+
       html2canvas(mapContainer).then(canvas => {
         // `canvas` now contains the screenshot of the OpenStreetMap.
         const imageData = canvas.toDataURL('image/png');
-  
+
         // Update the form control 'imageData'
         this.TopElevationForm.get('imageData').setValue(imageData);
       }).catch(error => {
         console.error('Error capturing screenshot:', error);
+        
       });
     } else {
       console.error('mapElement is undefined');
+    
     }
   }
-  
+
 
   showMap(lat: number, lng: number) {
     const map = L.map('map').setView([19.794444, 85.751111], 10);

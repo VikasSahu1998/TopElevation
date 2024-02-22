@@ -30,7 +30,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-toastr/toastr.css" 
             ],
             "scripts": [
               "node_modules/leaflet/dist/leaflet.js"
@@ -99,7 +100,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/ngx-toastr/toastr.css" 
             ],
             "scripts": []
           }

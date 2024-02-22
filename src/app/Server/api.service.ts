@@ -15,13 +15,13 @@ export class ApiService {
 
 
   postData(data: any) {
-    const headers = {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': 'http://localhost:4200',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Credentials': 'true'
-    };
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    //   'Access-Control-Allow-Origin': 'http://localhost:4200',
+    //   'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, PUT, PATCH, DELETE',
+    //   'Access-Control-Allow-Headers': '*',
+    //   'Access-Control-Allow-Credentials': 'true'
+    // };
     return this.http.post<any>(this.baseURL, JSON.stringify(data));
   }
   // , { headers, withCredentials: true }
