@@ -20,9 +20,14 @@ export class HomeComponent implements OnInit {
   updatedDistance!: number;
   TopElevationForm!: FormGroup | any;
   checkbox = "form accepted";
-
+  marker: any;
+  marker2: any;
+  line: any;
   generatedOTP!: any;
   otpSent: boolean = false;
+
+  map!: L.Map;
+  geojsonLayer!: L.GeoJSON;
 
   @ViewChild('mapElement') mapElement!: ElementRef;
 
@@ -41,15 +46,19 @@ export class HomeComponent implements OnInit {
     imageData: undefined
   }
   ngOnInit(): void {
+    this.toastr.success('WelCome ✈️', 'Hey There..👋🏻', {
+      timeOut: 3000,
+    });
     this.TopElevationForm = this.formbuilder.group({
       name: new FormControl('', [Validators.required, Validators.nullValidator, Validators.minLength(3),]),
       email: new FormControl('', [Validators.required, Validators.nullValidator, Validators.email]),
       Address: new FormControl('', [Validators.required, Validators.nullValidator]),
-      PhoneNumber: new FormControl('', [Validators.required, Validators.nullValidator, Validators.minLength(10), Validators.maxLength(10), Validators.pattern(/^\d{10}$/)]),
+      PhoneNumber: new FormControl('', [Validators.required, Validators.nullValidator, Validators.minLength(10), Validators.maxLength(10), Validators.pattern(/^[6789]\d{9}$/)]),
       otp: new FormControl('', [Validators.required, Validators.nullValidator, Validators.pattern(/^\d{4}$/)]),
       Latitude: new FormControl('', [Validators.required, Validators.nullValidator]),
       Longitude: new FormControl('', [Validators.required, Validators.nullValidator]),
       checkbox: new FormControl('', [Validators.required, Validators.nullValidator]),
+      Site_Elevation: new FormControl('', [Validators.required, Validators.nullValidator, Validators.pattern(/^[0-5]+(?:\.[0-5]+)?$/)]),
       uniqueId: new FormControl(['']),
       dateTime: new FormControl(['']),
       imageData: new FormControl(['']),
@@ -83,7 +92,7 @@ export class HomeComponent implements OnInit {
         this.showMap(this.lat, this.lng);
       });
     } else {
-      this.toastr.error('Geolocation is not supported by this browser', 'Major Error', {
+      this.toastr.error('Geolocation is not supported by this browser', 'Major Error 🚨', {
         timeOut: 3000,
       });
     }
@@ -94,7 +103,7 @@ export class HomeComponent implements OnInit {
     this.generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
     // You can implement OTP sending logic here, like sending an SMS to the entered phone number
 
-    this.toastr.success(this.generatedOTP, 'Generated OTP', {
+    this.toastr.success(this.generatedOTP, 'Generated OTP 💯', {
       timeOut: 5000,
     });
   }
@@ -123,12 +132,12 @@ export class HomeComponent implements OnInit {
       const enteredOTP = this.TopElevationForm.get('otp').value;
       if (enteredOTP == this.generatedOTP) {
         // OTP verification successful
-        this.toastr.success('OTP verification successfull', 'successfully', {
+        this.toastr.success('OTP verification successfull', 'successfully 🎉', {
           timeOut: 1000,
         });
       } else {
         // OTP verification failed
-        this.toastr.error('OTP verification failed', 'Major Error', {
+        this.toastr.error('OTP verification failed', 'Major Error 🚨', {
           timeOut: 1000,
         });
       }
@@ -154,13 +163,13 @@ export class HomeComponent implements OnInit {
       this.api.postData(this.noteObj)
         .subscribe({
           next: (res) => {
-            this.toastr.success(res, 'successfully', {
+            this.toastr.success(res, 'successfully 🎉', {
               timeOut: 1000,
             });
             this.TopElevationForm.reset();
           },
           error: (e) => {
-            this.toastr.error(e, 'failed', {
+            this.toastr.error(e, 'failed 🚨', {
               timeOut: 1000,
             });
 
@@ -168,7 +177,7 @@ export class HomeComponent implements OnInit {
         })
     }
     else {
-      this.toastr.error('Fill the Form Completely', 'failed', {
+      this.toastr.error('Fill the Form Completely', 'failed 🚨', {
         timeOut: 1000,
       });
     }
@@ -189,32 +198,40 @@ export class HomeComponent implements OnInit {
         // Update the form control 'imageData'
         this.TopElevationForm.get('imageData').setValue(imageData);
       }).catch(error => {
-        console.error('Error capturing screenshot:', error);
-        
+        console.error('🚨 Error capturing screenshot:', error);
+
       });
     } else {
-      console.error('mapElement is undefined');
-    
+      console.error('mapElement is undefined 🚨');
+
     }
   }
+
+
 
 
   showMap(lat: number, lng: number) {
     const map = L.map('map').setView([19.794444, 85.751111], 10);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a> '
     }).addTo(map);
     L.control.scale().addTo(map);
+
+    this.marker = L.marker([lat, lng]).addTo(map);
+    this.marker2 = L.marker([19.794444, 85.751111]).addTo(map);
+    this.line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
 
     // Load the custom layer JSON
     fetch('assets/Height.geojsonl.json')
       .then(response => response.json())
       .then(geojsonData => {
+        console.log('GeoJSON Data:', geojsonData); // Log GeoJSON data for debugging
         const geojsonLayer = new L.GeoJSON(geojsonData, {
-          style: function (feature) {
+          style: (feature) => {
             if (!feature || !feature.properties || !feature.properties.Name) return {};
             const height = feature.properties.Name;
             let color = '';
+
             switch (height) {
               case 'RW_05_23':
                 color = 'yellow';
@@ -241,40 +258,97 @@ export class HomeComponent implements OnInit {
                 color = 'black';
                 break;
             }
+
             return {
               color: color,
+              weight: 0.5
             };
           },
           onEachFeature: (feature, layer) => {
-
             layer.on('click', (e) => {
-              // const { lat, lng } = e.latlng;
-              const marker = L.marker([lat, lng]).addTo(map);
-              const marker2 = L.marker([19.794444, 85.751111]).addTo(map);
-              const line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+              const { lat, lng } = e.latlng;
+              this.latitude = lat;
+              this.longitude = lng;
 
-              map.on('click', (e) => {
-                const { lat, lng } = e.latlng;
-                this.latitude = lat;
-                this.longitude = lng;
-                marker.setLatLng([lat, lng]);
+              if (this.marker) map.removeLayer(this.marker);
+              if (this.line) map.removeLayer(this.line);
 
-                line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
+              this.marker = L.marker([lat, lng]).addTo(map);
+              this.line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
 
-                this.TopElevationForm.get('Latitude').setValue(lat);
-                this.TopElevationForm.get('Longitude').setValue(lng);
-                this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-
-                const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
-                popup.setContent(`Permissible Elevation: ${feature.properties.Name}<br> Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)},<br> Distance: ${this.updatedDistance.toFixed(2)} Km`);
-                popup.openOn(map);
-              });
+              this.updatePolyline(lat, lng);
+              this.TopElevationForm.get('Latitude').setValue(lat);
+              this.TopElevationForm.get('Longitude').setValue(lng);
+              this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+              console.log('Clicked Location:', lat, lng);
+              const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
+              const popupContent = `Permissible Elevation: ${feature.properties.Name} <br>  Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+              popup.setContent(popupContent);
+              popup.openOn(map);
             });
           }
         });
         geojsonLayer.addTo(map);
+
+        // Handle click events on the map
+        map.on('click', (e) => {
+          // Check if the click is inside the GeoJSON layer
+          const layers = geojsonLayer.getLayers();
+          let clickedInside = false;
+          layers.forEach(layer => {
+            // Handle different feature types
+            if (layer instanceof L.Polygon || layer instanceof L.Polyline) {
+              if (layer.getBounds().contains(e.latlng)) {
+                clickedInside = true;
+                return;
+              }
+            } else if (layer instanceof L.Marker) {
+              if (layer.getLatLng().equals(e.latlng)) {
+                clickedInside = true;
+                return;
+              }
+            }
+          });
+
+          if (!clickedInside) {
+            // If click is outside GeoJSON layer, show map data popup
+            const { lat, lng } = e.latlng;
+            this.latitude = lat;
+            this.longitude = lng;
+
+            if (this.marker) map.removeLayer(this.marker);
+            if (this.line) map.removeLayer(this.line);
+
+            this.marker = L.marker([lat, lng]).addTo(map);
+            this.line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
+
+            this.updatePolyline(lat, lng);
+            this.TopElevationForm.get('Latitude').setValue(lat);
+            this.TopElevationForm.get('Longitude').setValue(lng);
+            this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
+            console.log('Clicked Location:', lat, lng);
+            const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
+            const popupContent = `Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+            popup.setContent(popupContent);
+            popup.openOn(map);
+          }
+        });
       });
   }
+
+
+  updateMarker2Position(lat: number, lng: number) {
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    }
+  }
+
+  updatePolyline(lat: number, lng: number) {
+    if (this.line) {
+      this.line.setLatLngs([[lat, lng], [19.794444, 85.751111]]);
+    }
+  }
+
 
   calculateDistance(latitude1: number, longitude1: number, latitude2: number, longitude2: number): number {
     const earthRadius = 6371; // Radius of the Earth in kilometers

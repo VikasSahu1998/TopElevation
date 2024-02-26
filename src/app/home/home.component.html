@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="row align-items-center">
                     <div class="col-lg-5 mb-5 mb-lg-0">
-                        <h2 class="mb-5">Top Elevation<br><small>Data From.</small></h2>
+                        <h2 class="mb-5">Top Elevation<br><small>Data Form</small></h2>
                         <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on"
                             (ngSubmit)="onsubmit()" novalidate>
                             <div class="row">
@@ -59,15 +59,8 @@
                                             Phone Number is <strong>required.</strong>
                                         </div>
                                         <div *ngIf="TopElevationForm.get('PhoneNumber').errors.pattern">
-                                            Phone Number must be at least <strong>10 characters long</strong>
+                                            Enter valid <strong> Phone Number</strong>
                                         </div>
-
-                                        <!-- <div *ngIf="TopElevationForm.get('PhoneNumber').errors.max">
-                                            Phone Number must be at least <strong>10 characters long</strong>
-                                        </div>
-                                        <div *ngIf="TopElevationForm.get('PhoneNumber').errors.min">
-                                            Phone Number must be at least<strong>10 characters long</strong>
-                                        </div> -->
                                     </div>
                                 </div>
 
@@ -115,6 +108,30 @@
                                             Address is <strong>required.</strong>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 form-group">
+                                    <input type="number" class="form-control" name="Site_Elevation"
+                                         id="Site_Elevation" 
+                                        formControlName="Site_Elevation" placeholder="Site Elevation">
+                                    <div *ngIf="TopElevationForm.get('Site_Elevation').invalid && (TopElevationForm.get('Site_Elevation').dirty || TopElevationForm.get('Site_Elevation').touched)"
+                                        class="alert alert-danger mt-2">
+                                        <div *ngIf="TopElevationForm.get('Site_Elevation').errors.required">
+                                            Site Elevation is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Site_Elevation').errors.nullValidator">
+                                            Site Elevation is <strong>required.</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Site_Elevation').errors.pattern">
+                                            Site Elevation must be at least <strong>4 characters long</strong>
+                                        </div>
+                                        <div *ngIf="TopElevationForm.get('Site_Elevation').errors.pattern">
+                                            Enter Only Number <strong>Number In Mtrs.</strong>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -181,18 +198,10 @@
                         </form>
 
                     </div>
-                    <div class="col-lg-7 ml-auto">
+                    <div class="col-lg-7 ml-auto ">
+
                         <div id="map" #mapElement>
-
                         </div>
-                        <!-- <small>Latitude: {{ latitude }}<br> Longitude: {{ longitude }}</small> -->
-
-
-
-                        <!-- <h3 class="mb-4">Let's talk about everything.</h3>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil deleniti itaque similique
-                            magni. Magni, laboriosam perferendis maxime!</p>
-                        <p><a href="#">Read more</a></p> -->
                     </div>
                 </div>
             </div>
