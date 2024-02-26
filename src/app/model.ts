@@ -11,4 +11,5 @@ export interface Note {
     checkbox: any,
     dateTime:any,
     imageData: any,
+    Site_Elevation:any,
 }

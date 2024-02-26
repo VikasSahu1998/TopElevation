@@ -26,8 +26,8 @@ export class HomeComponent implements OnInit {
   generatedOTP!: any;
   otpSent: boolean = false;
 
-  map!: L.Map;
-  geojsonLayer!: L.GeoJSON;
+  // map!: L.Map;
+  // geojsonLayer!: L.GeoJSON;
 
   @ViewChild('mapElement') mapElement!: ElementRef;
 
@@ -43,7 +43,8 @@ export class HomeComponent implements OnInit {
     Longitude: undefined,
     checkbox: undefined,
     dateTime: undefined,
-    imageData: undefined
+    imageData: undefined,
+    Site_Elevation: undefined
   }
   ngOnInit(): void {
     this.toastr.success('WelCome ✈️', 'Hey There..👋🏻', {
@@ -62,7 +63,16 @@ export class HomeComponent implements OnInit {
       uniqueId: new FormControl(['']),
       dateTime: new FormControl(['']),
       imageData: new FormControl(['']),
-    },);
+    });
+    this.TopElevationForm.get('Latitude').valueChanges.subscribe((lat: number) => {
+      this.updateMarker2Position(lat, this.TopElevationForm.get('Longitude').value);
+      this.updatePolyline(lat, this.TopElevationForm.get('Longitude').value);
+    });
+ 
+    this.TopElevationForm.get('Longitude').valueChanges.subscribe((lng: number) => {
+      this.updateMarker2Position(this.TopElevationForm.get('Latitude').value, lng);
+      this.updatePolyline(this.TopElevationForm.get('Latitude').value, lng);
+    });
     this.generateUniqueId();
     this.getCurrentDateTime();
     this.getLocation();
@@ -159,6 +169,7 @@ export class HomeComponent implements OnInit {
       this.noteObj.checkbox = value.checkbox,
       this.noteObj.dateTime = value.dateTime
     this.noteObj.imageData = value.imageData;
+    this.noteObj.Site_Elevation = value.Site_Elevation;
     if (this.TopElevationForm.valid) {
       this.api.postData(this.noteObj)
         .subscribe({
@@ -210,7 +221,7 @@ export class HomeComponent implements OnInit {
 
 
 
-  showMap(lat: number, lng: number) {
+  showMap(lat: number, lng: number)  {
     const map = L.map('map').setView([19.794444, 85.751111], 10);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a> '
@@ -233,22 +244,22 @@ export class HomeComponent implements OnInit {
             let color = '';
 
             switch (height) {
-              case 'RW_05_23':
+              case '05.23':
                 color = 'yellow';
                 break;
-              case '49.7M AMSL':
+              case '49.7':
                 color = 'red';
                 break;
-              case '64.7M AMSL':
+              case '64.7':
                 color = 'green';
                 break;
-              case '74.7M AMSL':
+              case '74.7':
                 color = 'blue';
                 break;
-              case '59.7M AMSL':
+              case '59.7':
                 color = 'pink';
                 break;
-              case '24.7M AMSL':
+              case '24.7':
                 color = 'orange';
                 break;
               case 'NOC_Req':
@@ -272,17 +283,18 @@ export class HomeComponent implements OnInit {
 
               if (this.marker) map.removeLayer(this.marker);
               if (this.line) map.removeLayer(this.line);
-
+              const siteElevationInput = this.TopElevationForm.get('Site_Elevation');
+              const siteElevation = siteElevationInput ? siteElevationInput.value : 0;
+              const result = siteElevation - parseFloat(feature.properties.Name);
               this.marker = L.marker([lat, lng]).addTo(map);
               this.line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
-
               this.updatePolyline(lat, lng);
               this.TopElevationForm.get('Latitude').setValue(lat);
               this.TopElevationForm.get('Longitude').setValue(lng);
               this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-              console.log('Clicked Location:', lat, lng);
+
               const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
-              const popupContent = `Permissible Elevation: ${feature.properties.Name} <br>  Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+              const popupContent = `Permissible Elevation: ${feature.properties.Name }${feature.properties.details} <br>Permissible Height: ${result.toFixed(3)}M <br>  Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
               popup.setContent(popupContent);
               popup.openOn(map);
             });
@@ -328,7 +340,7 @@ export class HomeComponent implements OnInit {
             this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
             console.log('Clicked Location:', lat, lng);
             const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
-            const popupContent = `Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+            const popupContent = `Latitude: ${lat.toFixed(5)}, Longitude:${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
             popup.setContent(popupContent);
             popup.openOn(map);
           }
