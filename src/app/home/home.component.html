@@ -3,7 +3,7 @@
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="row align-items-center">
-                    <div class="col-lg-5 mb-5 mb-lg-0">
+                    <div class="col-sm-5 mb-5 mb-lg-0">
                         <h2 class="mb-5">Top Elevation<br><small>Data Form</small></h2>
                         <form class="border-right pr-5 mb-5" [formGroup]="TopElevationForm" autocomplete="on"
                             (ngSubmit)="onsubmit()" novalidate>
@@ -113,8 +113,7 @@
 
                             <div class="row">
                                 <div class="col-md-12 form-group">
-                                    <input type="number" class="form-control" name="Site_Elevation"
-                                         id="Site_Elevation"
+                                    <input type="number" class="form-control" name="Site_Elevation" id="Site_Elevation"
                                         formControlName="Site_Elevation" placeholder="Site Elevation">
                                     <div *ngIf="TopElevationForm.get('Site_Elevation').invalid && (TopElevationForm.get('Site_Elevation').dirty || TopElevationForm.get('Site_Elevation').touched)"
                                         class="alert alert-danger mt-2">
@@ -198,13 +197,16 @@
                         </form>
 
                     </div>
-                    <div class="col-lg-7 ml-auto ">
-
-                        <div id="map" #mapElement>
+                    <div class="col-lg-7">
+                        <div class="map-container">
+                            <div id="map" style="height: 400px; position: relative;"></div>
+                            <div id="mapData" class="map-data mt-2" ></div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
+
 </div>

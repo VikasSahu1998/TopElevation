@@ -29,7 +29,7 @@ export class HomeComponent implements OnInit {
   // map!: L.Map;
   // geojsonLayer!: L.GeoJSON;
 
-  @ViewChild('mapElement') mapElement!: ElementRef;
+  @ViewChild('map') mapElement!: ElementRef;
 
   noteObj: Note = {
     id: undefined,
@@ -68,7 +68,7 @@ export class HomeComponent implements OnInit {
       this.updateMarker2Position(lat, this.TopElevationForm.get('Longitude').value);
       this.updatePolyline(lat, this.TopElevationForm.get('Longitude').value);
     });
- 
+
     this.TopElevationForm.get('Longitude').valueChanges.subscribe((lng: number) => {
       this.updateMarker2Position(this.TopElevationForm.get('Latitude').value, lng);
       this.updatePolyline(this.TopElevationForm.get('Latitude').value, lng);
@@ -221,12 +221,21 @@ export class HomeComponent implements OnInit {
 
 
 
-  showMap(lat: number, lng: number)  {
+  showMap(lat: number, lng: number) {
     const map = L.map('map').setView([19.794444, 85.751111], 10);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a> '
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> | &copy; <a href="https://www.cognitivenavigation.com/">Cognitive Navigation Pvt. Ltd </a>'
     }).addTo(map);
     L.control.scale().addTo(map);
+
+    // Define the marker icon
+    const newIcon = L.icon({
+      iconUrl: 'assets/marker_map_icon.png', // Path to your red icon
+      iconSize: [38, 95],
+      iconAnchor: [22, 94],
+      popupAnchor: [-3, -76],
+    });
+
 
     this.marker = L.marker([lat, lng]).addTo(map);
     this.marker2 = L.marker([19.794444, 85.751111]).addTo(map);
@@ -236,7 +245,7 @@ export class HomeComponent implements OnInit {
     fetch('assets/Height.geojsonl.json')
       .then(response => response.json())
       .then(geojsonData => {
-        console.log('GeoJSON Data:', geojsonData); // Log GeoJSON data for debugging
+
         const geojsonLayer = new L.GeoJSON(geojsonData, {
           style: (feature) => {
             if (!feature || !feature.properties || !feature.properties.Name) return {};
@@ -283,20 +292,56 @@ export class HomeComponent implements OnInit {
 
               if (this.marker) map.removeLayer(this.marker);
               if (this.line) map.removeLayer(this.line);
-              const siteElevationInput = this.TopElevationForm.get('Site_Elevation');
-              const siteElevation = siteElevationInput ? siteElevationInput.value : 0;
-              const result = siteElevation - parseFloat(feature.properties.Name);
+
+              // const siteElevationInput = this.TopElevationForm.get('Site_Elevation');
+              // const siteElevation = siteElevationInput ? siteElevationInput.value : 0;
+              // const result = parseFloat(feature.properties.Name) - siteElevation;
               this.marker = L.marker([lat, lng]).addTo(map);
               this.line = L.polyline([[lat, lng], [19.794444, 85.751111]], { color: 'blue' }).addTo(map);
               this.updatePolyline(lat, lng);
               this.TopElevationForm.get('Latitude').setValue(lat);
               this.TopElevationForm.get('Longitude').setValue(lng);
               this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-
-              const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
-              const popupContent = `Permissible Elevation: ${feature.properties.Name }${feature.properties.details} <br>Permissible Height: ${result.toFixed(3)}M <br>  Latitude: ${lat.toFixed(5)}, Longitude:  ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
-              popup.setContent(popupContent);
-              popup.openOn(map);
+              // const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
+              // const popupContent = `Permissible Elevation: ${feature.properties.Name} ${feature.properties.details}<br>Permissible Height: ${result < 0 ? '-' : ''}${Math.abs(result).toFixed(3)}M <br>  Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+              // popup.setContent(popupContent);
+              // popup.openOn(map);
+              // Create HTML elements for displaying data
+              // Clear previous data on the map
+              const mapData = document.getElementById('mapData');
+              if (mapData !== null) {
+                  // Clear existing content and hide the container
+                  mapData.innerHTML = '';
+                  mapData.style.display = 'none';
+              
+                  const { lat, lng } = e.latlng;
+                  this.latitude = lat;
+                  this.longitude = lng;
+              
+                  const siteElevationInput = this.TopElevationForm.get('Site_Elevation');
+                  const siteElevation = siteElevationInput ? siteElevationInput.value : 0;
+                  const result = parseFloat(feature.properties.Name) - siteElevation;
+              
+                  // Update HTML content
+                  mapData.innerHTML = `
+                      <div>
+                          Permissible Elevation: ${feature.properties.Name} ${feature.properties.details}<br>
+                          Permissible Height: ${result < 0 ? '-' : ''}${Math.abs(result).toFixed(3)}M <br>
+                          Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)}<br>
+                          Distance: ${this.updatedDistance.toFixed(2)} km
+                      </div>`;
+              
+                  // Position the map data elements
+                  mapData.style.display = 'block'; // Make it visible
+                  mapData.style.bottom = '0'; // Adjust as necessary
+                  mapData.style.right = '0'; // Adjust as necessary
+                  mapData.style.backgroundColor = 'white';
+                  mapData.style.padding = '10px';
+                  mapData.style.borderRadius = '5px';
+                  mapData.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+                  mapData.style.zIndex = '9999';
+              }
+              
             });
           }
         });
@@ -338,11 +383,39 @@ export class HomeComponent implements OnInit {
             this.TopElevationForm.get('Latitude').setValue(lat);
             this.TopElevationForm.get('Longitude').setValue(lng);
             this.updatedDistance = this.calculateDistance(lat, lng, 19.794444, 85.751111);
-            console.log('Clicked Location:', lat, lng);
-            const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
-            const popupContent = `Latitude: ${lat.toFixed(5)}, Longitude:${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
-            popup.setContent(popupContent);
-            popup.openOn(map);
+
+            // const popup = L.popup({ autoPan: false, offset: L.point(0, -30) }).setLatLng(e.latlng);
+            // const popupContent = `Latitude: ${lat.toFixed(5)}, Longitude:${lng.toFixed(5)}<br> Distance: ${this.updatedDistance.toFixed(2)} km`;
+            // popup.setContent(popupContent);
+            // popup.openOn(map);
+            const mapData = document.getElementById('mapData');
+            if (mapData !== null) {
+              mapData.innerHTML = '';
+
+              const { lat, lng } = e.latlng;
+              this.latitude = lat;
+              this.longitude = lng;
+
+         
+
+              // Create HTML elements for displaying data
+              mapData.innerHTML = `
+                <div>
+                
+                  Latitude: ${lat.toFixed(5)}, Longitude: ${lng.toFixed(5)}<br>
+                  Distance: ${this.updatedDistance.toFixed(2)} km
+                </div>`;
+            
+                // Position the map data elements
+                mapData.style.display = 'block'; // Make it visible
+                mapData.style.bottom = '0'; // Adjust as necessary
+                mapData.style.right = '0'; // Adjust as necessary
+                mapData.style.backgroundColor = 'white';
+                mapData.style.padding = '10px';
+                mapData.style.borderRadius = '5px';
+                mapData.style.boxShadow = '0px 0px 10px rgba(0, 0, 0, 0.5)';
+                mapData.style.zIndex = '9999';
+            }
           }
         });
       });
